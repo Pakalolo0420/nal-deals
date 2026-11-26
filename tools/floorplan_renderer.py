@@ -16,8 +16,11 @@ SPEC FORMAT (plan units = any consistent unit, roughly feet; y grows DOWN)
   "fixtures": [{"type": T, "rect":[x0,y0,x1,y1], "wall":"n|e|s|w"}],
            # T: counter, island, fridge, sink, range, tub, shower, toilet, vanity, wh (water heater), wd (washer/dryer), rod
            # "wall" = which side is against the wall (toilet tank, vanity basin offset)
-  "doors":  [{"hinge":[x,y], "len":L, "wall":"h|v", "swing":1|-1, "bg":"room|wet"}],
+  "doors":  [{"hinge":[x,y], "len":L, "wall":"h|v", "swing":1|-1, "hand":"left|right", "bg":"room|wet"}],
            # h = door in a horizontal wall; leaf swings toward +y (swing 1) or -y. v = vertical wall, toward +x / -x.
+           # hand left (default) = opening runs +x (h) / +y (v) from the hinge; right = opening runs -x / -y (hinge on the far jamb)
+  "double_doors":[{"wall":"h|v", "at":c, "from":a, "to":b, "swing":1|-1, "bg":"room"}],
+           # paired doors (French/balcony): two half-width leaves hinged on each jamb, swinging apart in mirror image
   "bifolds":[{"wall":"h|v", "at":c, "from":a, "to":b, "side":1|-1, "bg":"wet|room"}],
   "sliders":[{"wall":"h|v", "at":c, "from":a, "to":b}],
   "windows":[{"wall":"h|v", "at":c, "from":a, "to":b}],
@@ -172,16 +175,28 @@ def render_svg(spec):
         a, b = P(xa, ya); c, d = P(xb, yb); k = bf.get("side", 1) * abs((bf["to"] - bf["from"])) * 0.25 * s
         if bf["wall"] == "v": o.append(f'<polyline points="{a:.1f},{b:.1f} {a+k:.1f},{(b+d)/2:.1f} {c:.1f},{d:.1f}" fill="none" stroke="{NAVY}" stroke-width="2"/>')
         else: o.append(f'<polyline points="{a:.1f},{b:.1f} {(a+c)/2:.1f},{b+k:.1f} {c:.1f},{d:.1f}" fill="none" stroke="{NAVY}" stroke-width="2"/>')
-    for dr in spec.get("doors", []):
-        hx, hy = dr["hinge"]; L = dr["len"]; sw_ = dr.get("swing", 1); col = bgc.get(dr.get("bg", "room"), ROOM)
-        if dr["wall"] == "h":
-            gap("h", hy, hx, hx + L, col)
-            a, b = P(hx, hy); c, _ = P(hx + L, hy); ex, ey = P(hx, hy + sw_ * L); sweep = 1 if sw_ > 0 else 0; start = (c, b)
+    def door(hx, hy, L, wall, sw_, hand, col):
+        # hand "left" (default): door opening runs +x/+y from the hinge; "right": runs -x/-y (hinge on the other jamb)
+        d_ = -1 if hand == "right" else 1
+        if wall == "h":
+            gap("h", hy, min(hx, hx + d_ * L), max(hx, hx + d_ * L), col)
+            a, b = P(hx, hy); c, _ = P(hx + d_ * L, hy); ex, ey = P(hx, hy + sw_ * L); sweep = 1 if sw_ * d_ > 0 else 0; start = (c, b)
         else:
-            gap("v", hx, hy, hy + L, col)
-            a, b = P(hx, hy); _, d = P(hx, hy + L); ex, ey = P(hx + sw_ * L, hy); sweep = 0 if sw_ > 0 else 1; start = (a, d)
+            gap("v", hx, min(hy, hy + d_ * L), max(hy, hy + d_ * L), col)
+            a, b = P(hx, hy); _, d = P(hx, hy + d_ * L); ex, ey = P(hx + sw_ * L, hy); sweep = 0 if sw_ * d_ > 0 else 1; start = (a, d)
         o.append(f'<line x1="{a:.1f}" y1="{b:.1f}" x2="{ex:.1f}" y2="{ey:.1f}" stroke="{NAVY}" stroke-width="3"/>')
         o.append(f'<path d="M{start[0]:.1f},{start[1]:.1f} A{L*s:.1f},{L*s:.1f} 0 0 {sweep} {ex:.1f},{ey:.1f}" fill="none" stroke="{NAVY}" stroke-width="2" stroke-dasharray="6 5"/>')
+    for dr in spec.get("doors", []):
+        hx, hy = dr["hinge"]
+        door(hx, hy, dr["len"], dr["wall"], dr.get("swing", 1), dr.get("hand", "left"), bgc.get(dr.get("bg", "room"), ROOM))
+    for dd in spec.get("double_doors", []):
+        # paired doors: hinges on both jambs, leaves swing apart (mirror images), each half the opening
+        a_, b_ = sorted((dd["from"], dd["to"])); half = (b_ - a_) / 2; sw_ = dd.get("swing", 1)
+        col = bgc.get(dd.get("bg", "room"), ROOM)
+        if dd["wall"] == "h":
+            door(a_, dd["at"], half, "h", sw_, "left", col); door(b_, dd["at"], half, "h", sw_, "right", col)
+        else:
+            door(dd["at"], a_, half, "v", sw_, "left", col); door(dd["at"], b_, half, "v", sw_, "right", col)
 
     # 4 entry
     en = spec.get("entry")
