@@ -1,0 +1,49 @@
+name: NAL floor plan render
+# A Make scenario (NAL Floor Plan Fix, fast) saves a spec to floorplan-jobs/<recId>-<stamp>.json.
+# This renders each new spec with tools/floorplan_renderer.py to layouts/<recId>-<stamp>.png and commits it.
+on:
+  push:
+    branches: [main]
+    paths: ['floorplan-jobs/**.json']
+permissions:
+  contents: write
+concurrency:
+  group: floorplan-render
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install librsvg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq librsvg2-bin fontconfig > /dev/null
+      - name: Render new specs
+        run: |
+          set -e
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            FILES=$(git ls-files 'floorplan-jobs/*.json')
+          else
+            FILES=$(git diff --name-only --diff-filter=AM "$BEFORE" "${{ github.sha }}" -- 'floorplan-jobs/*.json')
+          fi
+          mkdir -p layouts
+          for f in $FILES; do
+            name=$(basename "$f" .json)
+            echo "Rendering $name"
+            python3 tools/floorplan_renderer.py "$f" "layouts/$name.png"
+            rm -f "layouts/$name.svg"
+          done
+      - name: Commit drawings
+        run: |
+          git config user.name "nal-floorplan-bot"
+          git config user.email "nal-floorplan-bot@users.noreply.github.com"
+          git add layouts/*.png || true
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "Render floor plan drawings"
+          for i in 1 2 3 4 5; do
+            git pull --rebase -q origin main && git push -q origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
