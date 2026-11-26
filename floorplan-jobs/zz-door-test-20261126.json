@@ -1,0 +1,5 @@
+{"title":"Door Test","sub":"hand + double_doors","rooms":[{"poly":[[0,0],[20,0],[20,14],[0,14]],"kind":"room"},{"rect":[0,14,20,20],"kind":"outdoor"}],
+"walls":[[10,0,10,14]],
+"doors":[{"hinge":[2,0],"len":3,"wall":"h","swing":1},{"hinge":[8,0],"len":3,"wall":"h","swing":1,"hand":"right"},{"hinge":[10,4],"len":3,"wall":"v","swing":1},{"hinge":[10,12],"len":3,"wall":"v","swing":-1,"hand":"right"}],
+"double_doors":[{"wall":"h","at":14,"from":12,"to":18,"swing":1}],
+"labels":[[5,8,"Left / right",20],[15,8,"Paired out",20]]}
