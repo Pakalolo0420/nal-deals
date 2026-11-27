@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""NAL floor plan renderer (v3, Nov 27 2026: door hand, double_doors, angled openings, room sizes, furniture fit guides).
+"""NAL floor plan renderer (v3.1, Nov 27 2026: door hand, double_doors, angled openings, room sizes, furniture fit guides; plan area shrinks to clear the caption).
 
 Usage:  python3 floorplan_renderer.py spec.json out.png
 Needs:  rsvg-convert (librsvg) and the brand fonts. Fonts are fetched from
@@ -79,6 +79,7 @@ def render_svg(spec):
     if mr is None: mr = span * 0.26 if any(n.get("side") == "right" for n in notes) else span * 0.03
     ex0, ey0, ex1, ey1 = x0 - ml, y0 - span * 0.03, x1 + mr, y1 + span * 0.08
     ax0, ay0, ax1, ay1 = 70, 245, 1010, 915
+    if spec.get("caption") or spec.get("furniture"): ay1 = 885  # leave room for an ENTRY label above the furniture caption
     s = min((ax1 - ax0) / (ex1 - ex0), (ay1 - ay0) / (ey1 - ey0))
     ox = ax0 + ((ax1 - ax0) - (ex1 - ex0) * s) / 2 - ex0 * s
     oy = ay0 + ((ay1 - ay0) - (ey1 - ey0) * s) / 2 - ey0 * s
