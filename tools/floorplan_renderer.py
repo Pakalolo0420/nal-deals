@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""NAL floor plan renderer (v2, Nov 26 2026: door hand, double_doors, angled openings, room sizes).
+"""NAL floor plan renderer (v3, Nov 27 2026: door hand, double_doors, angled openings, room sizes, furniture fit guides).
 
 Usage:  python3 floorplan_renderer.py spec.json out.png
 Needs:  rsvg-convert (librsvg) and the brand fonts. Fonts are fetched from
@@ -28,6 +28,11 @@ SPEC FORMAT (plan units = any consistent unit, roughly feet; y grows DOWN)
   "entry":  {"at":[x,y], "dir":"s|n|e|w"},   # brass arrow pointing INTO the unit, placed outside the wall
   "labels": [[x, y, "Text", size], ...],     # size 15-34; use "\n" for 2 lines; "Cl." for small closets
   "sizes":  [[x, y, "~18' × 11'"], ...],     # approximate room size under a label (small grey text); put y ~70 plan units below the label
+  "furniture": [{"rect":[x0,y0,x1,y1] | "poly":[[x,y],...], "pillows":[[x0,y0,x1,y1],...], "lines":[[x1,y1,x2,y2],...],
+                 "label":"KING", "dims":"76\" × 80\"", "at":[x,y]}],
+           # fit guides at TRUE scale (plan units per inch = feet-scale / 12): brass dashed outline, label + size in brass.
+           # "pillows" = small rounded rects (bed pillows, chairs); "lines" = dashed detail lines (headboard, sofa back).
+           # When any furniture is present the renderer adds the caption "Dashed furniture drawn to scale (standard sizes) to show what fits".
   "notes":  [{"text":"Line one\nline two", "to":[x,y], "side":"left|right", "y":planY}],
   "margin": [left, right]                    # optional extra plan-unit margin for notes (default auto)
 }
@@ -200,7 +205,7 @@ def render_svg(spec):
         else:
             door(dd["at"], a_, half, "v", sw_, "left", col); door(dd["at"], b_, half, "v", sw_, "right", col)
 
-    # 3b angled openings (example extension): windows/sliders on any straight wall segment
+    # 3b angled openings: windows/sliders on any straight wall segment
     for op in spec.get("openings_a", []):
         x1, y1, x2, y2 = op["line"]; L_ = math.hypot(x2 - x1, y2 - y1); ux, uy = (x2 - x1) / L_, (y2 - y1) / L_; nx, ny = -uy, ux
         a, b = P(x1, y1); c, d = P(x2, y2)
@@ -213,6 +218,27 @@ def render_svg(spec):
             for (p_, q_, off) in ((0, mid + ov, -3), (mid - ov, L_, 3)):
                 sa, sb = P(x1 + ux * p_, y1 + uy * p_); ea, eb = P(x1 + ux * q_, y1 + uy * q_)
                 o.append(f'<line x1="{sa+nx*off:.1f}" y1="{sb+ny*off:.1f}" x2="{ea+nx*off:.1f}" y2="{eb+ny*off:.1f}" stroke="{NAVY}" stroke-width="3.5"/>')
+
+    # 3c furniture fit guides: brass dashed outlines at true scale
+    FB = "#8F6B22"
+    for fu in spec.get("furniture", []):
+        pts = fu["poly"] if "poly" in fu else [(fu["rect"][0], fu["rect"][1]), (fu["rect"][2], fu["rect"][1]), (fu["rect"][2], fu["rect"][3]), (fu["rect"][0], fu["rect"][3])]
+        d = " ".join("%.1f,%.1f" % P(x, y) for x, y in pts)
+        o.append(f'<polygon points="{d}" fill="{BRASS}" fill-opacity="0.12" stroke="{BRASS}" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round"/>')
+        for ln_ in fu.get("lines", []):
+            a, b = P(ln_[0], ln_[1]); c, e = P(ln_[2], ln_[3])
+            o.append(f'<line x1="{a:.1f}" y1="{b:.1f}" x2="{c:.1f}" y2="{e:.1f}" stroke="{BRASS}" stroke-width="1.8" stroke-dasharray="5 4"/>')
+        for pr in fu.get("pillows", []):
+            a, b = P(pr[0], pr[1]); c, e = P(pr[2], pr[3])
+            o.append(f'<rect x="{min(a,c):.1f}" y="{min(b,e):.1f}" width="{abs(c-a):.1f}" height="{abs(e-b):.1f}" rx="5" fill="none" stroke="{BRASS}" stroke-width="1.8"/>')
+        if fu.get("at"):
+            px, py = P(*fu["at"])
+            o.append(f'<text x="{px:.1f}" y="{py:.1f}" font-family="DM Sans" font-weight="700" font-size="15" letter-spacing="1.5" fill="{FB}" text-anchor="middle">{esc(fu.get("label",""))}</text>')
+            if fu.get("dims"):
+                o.append(f'<text x="{px:.1f}" y="{py+19:.1f}" font-family="DM Sans" font-weight="500" font-size="15" fill="{FB}" text-anchor="middle">{esc(fu["dims"])}</text>')
+    cap = spec.get("caption") or ("Dashed furniture drawn to scale (standard sizes) to show what fits" if spec.get("furniture") else "")
+    if cap:
+        o.append(f'<text x="540" y="944" font-family="DM Sans" font-weight="500" font-size="17" fill="#8F6B22" text-anchor="middle">{esc(cap)}</text>')
 
     # 4 entry
     en = spec.get("entry")
@@ -232,7 +258,7 @@ def render_svg(spec):
             yy = py + size * 0.35 + (i - (len(lines) - 1) / 2) * size * 1.2
             o.append(f'<text x="{px:.1f}" y="{yy:.1f}" font-family="DM Sans" font-weight="700" font-size="{size}" letter-spacing="{size*0.08:.1f}" fill="{CHAR}" text-anchor="middle">{esc(ln.upper())}</text>')
 
-    # 5b approximate room sizes (example extension)
+    # 5b approximate room sizes
     for x, y, tx in spec.get("sizes", []):
         px, py = P(x, y)
         o.append(f'<text x="{px:.1f}" y="{py:.1f}" font-family="DM Sans" font-weight="500" font-size="17" fill="{CHAR}" fill-opacity="0.75" text-anchor="middle">{esc(tx)}</text>')
