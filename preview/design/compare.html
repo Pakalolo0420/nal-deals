@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Home page directions</title>
+<style>body{margin:0;font:15px/1.5 system-ui,sans-serif;background:#e9e7e2;color:#222}h1{font-size:1.2rem;margin:0}header{padding:16px 20px}
+.g{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:0 20px 30px}.col h2{font-size:1rem;margin:0 0 4px}.col p{margin:0 0 10px;color:#555;font-size:.9rem}
+.d{width:100%;aspect-ratio:1366/860;overflow:hidden;border-radius:8px;background:#fff;position:relative}.d iframe{width:1366px;height:860px;border:0;transform-origin:0 0;position:absolute}
+.p{width:200px;height:433px;overflow:hidden;border-radius:18px;border:6px solid #222;margin-top:14px;position:relative}.p iframe{width:390px;height:844px;border:0;transform:scale(.4834);transform-origin:0 0;position:absolute}
+a{color:#222}@media(max-width:900px){.g{grid-template-columns:1fr}}</style></head><body>
+<header><h1>Home page directions (preview, not live)</h1><p>Each frame scrolls. Open full size: <a href="a.html">A</a> · <a href="b.html">B</a> · <a href="c.html">C</a> · People test: <a href="look/">look/</a></p></header>
+<div class="g">
+<div class="col"><h2>A · Warm & local</h2><p>Andres’s face and “I grew up here” first. For people who pick a person over a company.</p><div class="d"><iframe src="a.html"></iframe></div><div class="p"><iframe src="a.html"></iframe></div></div>
+<div class="col"><h2>B · Clean & premium</h2><p>Calm, lots of space, big proof numbers. For high-end and relocating renters who scan fast.</p><div class="d"><iframe src="b.html"></iframe></div><div class="p"><iframe src="b.html"></iframe></div></div>
+<div class="col"><h2>C · Bold & modern</h2><p>Strong color and punchy type, deals up front. For younger renters coming from TikTok and Marketplace.</p><div class="d"><iframe src="c.html"></iframe></div><div class="p"><iframe src="c.html"></iframe></div></div>
+</div>
+<script>function fit(){document.querySelectorAll('.d').forEach(d=>{const f=d.querySelector('iframe');f.style.transform='scale('+(d.clientWidth/1366)+')'})}addEventListener('resize',fit);fit()</script>
+</body></html>
