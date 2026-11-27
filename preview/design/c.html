@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Design C: Bold & modern</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet"><style>
+*,*:before,*:after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%;display:block}a{color:inherit}
+.w{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+form label{display:grid;gap:4px;font-size:.82rem;font-weight:500}form input,form select{font:inherit;font-size:1rem;padding:.72rem .8rem;border-radius:8px;width:100%}form{display:grid;gap:12px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}form button{font:inherit;font-weight:700;font-size:1rem;padding:1rem;border:0;border-radius:8px;cursor:pointer}.fine{font-size:.8rem;text-align:center;margin:0;opacity:.75}
+
+:root{--navy:#1B2A4A;--ink:#2D2D2D;--cream:#F5F0E8;--linen:#E8DFD0;--gold:#C4993A;--green:#2C4A3E;--wine:#6B2D3E}
+body{background:var(--cream);color:var(--ink);font:400 16px/1.55 "DM Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"DM Sans",sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.02;margin:0 0 .4em;text-wrap:balance}
+.top{background:var(--navy);color:var(--cream)}
+.hd{display:flex;justify-content:space-between;align-items:center;padding-block:18px}
+.wm{font-weight:800;letter-spacing:-.01em;font-size:1.05rem}.wm span{color:var(--gold)}
+.btn{display:inline-block;background:var(--gold);color:var(--navy);font-weight:800;text-decoration:none;padding:1rem 1.6rem;border-radius:12px;font-size:1rem}
+.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:40px;align-items:center;padding-block:36px 72px}
+.hero h1{font-size:clamp(2.7rem,8vw,5.4rem);color:var(--cream)}.hero h1 em{font-style:normal;color:var(--gold)}
+.lede{font-size:1.15rem;color:#d9d2c4;max-width:32rem;margin-bottom:26px}
+.ph{position:relative;justify-self:center;width:100%;max-width:320px}
+.ph:before{content:"";position:absolute;inset:-14px;border-radius:50%;background:var(--gold)}
+.ph img{position:relative;border-radius:50%;aspect-ratio:1;object-fit:cover;width:100%;border:6px solid var(--navy)}
+.badge{position:absolute;right:-8px;top:8px;background:var(--wine);color:var(--cream);font-weight:800;font-size:.8rem;padding:8px 12px;border-radius:10px;transform:rotate(6deg)}
+.strip{background:var(--green);color:var(--cream);font-weight:800;letter-spacing:.06em;font-size:.86rem;text-transform:uppercase;overflow:hidden;white-space:nowrap;padding:14px 0}
+.strip span{display:inline-block;animation:mq 30s linear infinite}@keyframes mq{to{transform:translateX(-50%)}}
+.sec{padding-block:72px}.sec h2{font-size:clamp(2rem,5vw,3.2rem);color:var(--navy)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{border-radius:20px;padding:28px;color:var(--cream)}.step:nth-child(1){background:var(--navy)}.step:nth-child(2){background:var(--green)}.step:nth-child(3){background:var(--wine)}
+.step b{display:block;font-size:3.4rem;font-weight:800;color:var(--gold);line-height:1}.step h3{font-size:1.35rem}
+.deals{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.deal{background:#FBF8F2;border:3px solid var(--navy);border-radius:20px;padding:22px;position:relative}
+.deal .s{position:absolute;top:-14px;left:18px;background:var(--gold);color:var(--navy);font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;padding:5px 12px;border-radius:8px}
+.deal .a{font-weight:700;color:var(--green);margin-top:8px}.deal .p{font-size:2.4rem;font-weight:800;color:var(--navy);letter-spacing:-.03em}
+.note{font-size:.8rem;color:#6b6257;margin-top:16px}
+.fs{background:var(--gold)}.fs h2{color:var(--navy)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.fcard{background:var(--navy);color:var(--cream);border-radius:22px;padding:26px}
+.fcard input,.fcard select{border:0;background:var(--cream);color:var(--ink);border-radius:10px}.fcard button{background:var(--gold);color:var(--navy);font-weight:800;border-radius:10px}
+.ft{background:var(--navy);color:#cfc6b6;font-size:.82rem;padding-block:28px}
+@media(max-width:820px){.hero,.fg{grid-template-columns:1fr;gap:28px}.ph{max-width:200px;order:-1;justify-self:start;margin:14px 0 0 14px}.steps,.deals{grid-template-columns:1fr}.deals{gap:26px}.sec{padding-block:52px}.hd .btn{padding:.6rem 1rem;font-size:.85rem}}
+</style></head><body><div class="top"><header class="w hd"><div class="wm">Nashville<span>/</span>Apartment Locator</div><a class="btn" href="#go">Start</a></header>
+<section class="w hero"><div><h1>Your Nashville apartment. Found by a <em>local.</em> Free.</h1><p class="lede">I’m Andres. I search, tour (in person or on video) and help you apply. You pay $0.</p><a class="btn" href="#go">Start my free search →</a></div>
+<div class="ph"><img src="https://pakalolo0420.github.io/nal-deals/site/andres-headshot.jpg" alt="Andres Herrera"><span class="badge">Since 2005</span></div></section></div>
+<div class="strip"><span>In Nashville since 2005 ✦ $0 to you ✦ Video tours if you’re out of town ✦ 5.0 on Google ✦ 200+ people helped ✦ In Nashville since 2005 ✦ $0 to you ✦ Video tours if you’re out of town ✦ 5.0 on Google ✦ 200+ people helped ✦ </span></div>
+<section class="sec"><div class="w"><h2>How it works</h2><div class="steps"><div class="step"><b>01</b><h3>Tell me what you need</h3><p>Budget, move date, areas you like. Five minutes, no commitment.</p></div><div class="step"><b>02</b><h3>I do the searching</h3><p>Not 25 maybes. I pull your top 10, then we pick a top 3 together on a quick call.</p></div><div class="step"><b>03</b><h3>Tour, apply, move in</h3><p>We tour together, or I tour for you on live video. You apply directly with the apartment.</p></div></div></div></section>
+<section class="sec" style="padding-top:0"><div class="w"><h2>Deals right now</h2><div class="deals"><div class="deal"><span class="s">3 months free</span><div class="a">Studio · The Gulch</div><div class="p">$1,751<small style="font-size:.42em;font-weight:700">/mo</small></div><div style="font-size:.9rem">≈ $1,369/mo effective</div></div><div class="deal"><span class="s">2 months free</span><div class="a">1 bed · Wedgewood-Houston</div><div class="p">$1,477<small style="font-size:.42em;font-weight:700">/mo</small></div><div style="font-size:.9rem">≈ $1,231/mo effective</div></div><div class="deal"><span class="s">8 weeks free</span><div class="a">2 bed · Midtown</div><div class="p">$2,835<small style="font-size:.42em;font-weight:700">/mo</small></div><div style="font-size:.9rem">≈ $2,486/mo effective</div></div></div><p class="note">Specials I checked in Nov 2026. Effective rent spreads the free time over a 12-month lease (15 for the Midtown 2 bed). Pricing changes weekly.</p></div></section>
+<section class="sec fs" id="go"><div class="w fg"><div><h2>Tell me what you need. I’ll do the searching.</h2><p style="color:var(--navy);font-weight:500">Hand-picked options. Tours and applications handled. $0 to you.</p></div><div class="fcard"><form class="f" onsubmit="event.preventDefault();this.querySelector('button').textContent='Preview only: nothing was sent'">
+<label>Name<input name="name" placeholder="First, Last" autocomplete="off"></label>
+<label>Phone<input name="phone" type="tel" placeholder="(615) 555-0100" autocomplete="off"></label>
+<label>Email<input name="email" type="email" placeholder="you@email.com" autocomplete="off"></label>
+<div class="row2"><label>Monthly budget<select><option>Select…</option><option>Under $1,100</option><option>$1,100–$1,500</option><option>$1,500–$2,000</option><option>$2,000–$2,500</option><option>$2,500+</option></select></label>
+<label>Moving<select><option>When?</option><option>ASAP</option><option>1–2 months</option><option>2–3 months</option><option>3+ months</option></select></label></div>
+<button type="submit">Start my free search</button><p class="fine">I’ll reach out shortly. No spam, ever.</p></form></div></div></section>
+<footer class="ft"><div class="w">Brought to you by Nashville Apartment Locators · Brokerage (615) 606-2787 · Andres Herrera (615) 668-1831 · andres@nashapts.com<br>Equal Housing Opportunity.</div></footer></body></html>
