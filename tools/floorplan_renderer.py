@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""NAL floor plan renderer (v1, Nov 25 2026).
+"""NAL floor plan renderer (v2, Nov 26 2026: door hand, double_doors, angled openings, room sizes).
 
 Usage:  python3 floorplan_renderer.py spec.json out.png
 Needs:  rsvg-convert (librsvg) and the brand fonts. Fonts are fetched from
@@ -24,8 +24,10 @@ SPEC FORMAT (plan units = any consistent unit, roughly feet; y grows DOWN)
   "bifolds":[{"wall":"h|v", "at":c, "from":a, "to":b, "side":1|-1, "bg":"wet|room"}],
   "sliders":[{"wall":"h|v", "at":c, "from":a, "to":b}],
   "windows":[{"wall":"h|v", "at":c, "from":a, "to":b}],
+  "openings_a":[{"type":"window|slider", "line":[x1,y1,x2,y2]}],   # window or sliding door on an ANGLED wall segment
   "entry":  {"at":[x,y], "dir":"s|n|e|w"},   # brass arrow pointing INTO the unit, placed outside the wall
   "labels": [[x, y, "Text", size], ...],     # size 15-34; use "\n" for 2 lines; "Cl." for small closets
+  "sizes":  [[x, y, "~18' × 11'"], ...],     # approximate room size under a label (small grey text); put y ~70 plan units below the label
   "notes":  [{"text":"Line one\nline two", "to":[x,y], "side":"left|right", "y":planY}],
   "margin": [left, right]                    # optional extra plan-unit margin for notes (default auto)
 }
@@ -198,6 +200,20 @@ def render_svg(spec):
         else:
             door(dd["at"], a_, half, "v", sw_, "left", col); door(dd["at"], b_, half, "v", sw_, "right", col)
 
+    # 3b angled openings (example extension): windows/sliders on any straight wall segment
+    for op in spec.get("openings_a", []):
+        x1, y1, x2, y2 = op["line"]; L_ = math.hypot(x2 - x1, y2 - y1); ux, uy = (x2 - x1) / L_, (y2 - y1) / L_; nx, ny = -uy, ux
+        a, b = P(x1, y1); c, d = P(x2, y2)
+        o.append(f'<line x1="{a:.1f}" y1="{b:.1f}" x2="{c:.1f}" y2="{d:.1f}" stroke="{ROOM}" stroke-width="12"/>')
+        if op.get("type") == "window":
+            for off in (-4, 0, 4):
+                o.append(f'<line x1="{a+nx*off:.1f}" y1="{b+ny*off:.1f}" x2="{c+nx*off:.1f}" y2="{d+ny*off:.1f}" stroke="{NAVY}" stroke-width="1.6"/>')
+        else:
+            mid = L_ / 2; ov = L_ * 0.07
+            for (p_, q_, off) in ((0, mid + ov, -3), (mid - ov, L_, 3)):
+                sa, sb = P(x1 + ux * p_, y1 + uy * p_); ea, eb = P(x1 + ux * q_, y1 + uy * q_)
+                o.append(f'<line x1="{sa+nx*off:.1f}" y1="{sb+ny*off:.1f}" x2="{ea+nx*off:.1f}" y2="{eb+ny*off:.1f}" stroke="{NAVY}" stroke-width="3.5"/>')
+
     # 4 entry
     en = spec.get("entry")
     if en:
@@ -215,6 +231,11 @@ def render_svg(spec):
         for i, ln in enumerate(lines):
             yy = py + size * 0.35 + (i - (len(lines) - 1) / 2) * size * 1.2
             o.append(f'<text x="{px:.1f}" y="{yy:.1f}" font-family="DM Sans" font-weight="700" font-size="{size}" letter-spacing="{size*0.08:.1f}" fill="{CHAR}" text-anchor="middle">{esc(ln.upper())}</text>')
+
+    # 5b approximate room sizes (example extension)
+    for x, y, tx in spec.get("sizes", []):
+        px, py = P(x, y)
+        o.append(f'<text x="{px:.1f}" y="{py:.1f}" font-family="DM Sans" font-weight="500" font-size="17" fill="{CHAR}" fill-opacity="0.75" text-anchor="middle">{esc(tx)}</text>')
 
     # 6 notes (Caveat + brass arrows) in the side margins
     lx_, _ = P(x0, 0); rx_, _ = P(x1, 0)
